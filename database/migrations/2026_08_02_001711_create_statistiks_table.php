@@ -6,20 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('statistiks', function (Blueprint $table) {
             $table->id();
+            $table->string('kategori'); // e.g. 'ringkasan', 'penduduk', 'pendidikan', 'pekerjaan', 'umkm'
+            $table->string('label');
+            $table->string('nilai'); // e.g. '4.812', '50%'
+            $table->string('sub_label')->nullable(); // e.g. 'Jumlah Penduduk', 'jiwa'
+            $table->integer('persentase')->default(0); // for visual progress bar (0 - 100)
+            $table->string('icon')->nullable(); // for fontawesome icons
+            $table->integer('urutan')->default(0);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('statistiks');
