@@ -111,5 +111,121 @@
     </div>
 
     @stack('scripts')
+
+    {{-- Custom Confirm Modal --}}
+    <style>
+        #confirmModal {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        #confirmModal.is-open { opacity: 1; pointer-events: all; }
+        #confirmBackdrop {
+            position: absolute; inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+        }
+        #confirmCard {
+            position: relative; background: #fff;
+            border-radius: 1.5rem; box-shadow: 0 25px 60px rgba(0,0,0,.18);
+            width: 100%; max-width: 380px; padding: 2.25rem 2rem;
+            transform: scale(.94); transition: transform 0.22s cubic-bezier(.34,1.56,.64,1);
+        }
+        #confirmModal.is-open #confirmCard { transform: scale(1); }
+        #confirmIconWrap {
+            width: 64px; height: 64px; border-radius: 1rem;
+            background: #fef2f2; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.25rem;
+        }
+        #confirmIconWrap i { font-size: 1.6rem; color: #ef4444; }
+        #confirmTitle {
+            text-align: center; font-weight: 800; font-size: 1.1rem;
+            color: #111827; margin: 0 0 .5rem;
+        }
+        #confirmMessage {
+            text-align: center; font-size: .85rem; color: #6b7280;
+            line-height: 1.6; margin: 0 0 1.75rem;
+        }
+        #confirmActions { display: flex; gap: .75rem; }
+        #confirmCancel, #confirmOk {
+            flex: 1; padding: .8rem 1rem; border-radius: .85rem;
+            font-size: .85rem; font-weight: 700; cursor: pointer;
+            border: none; transition: background .15s, transform .1s;
+        }
+        #confirmCancel { background: #f3f4f6; color: #374151; }
+        #confirmCancel:hover { background: #e5e7eb; }
+        #confirmOk {
+            background: #dc2626; color: #fff;
+            display: flex; align-items: center; justify-content: center; gap: .4rem;
+        }
+        #confirmOk:hover { background: #b91c1c; }
+        #confirmOk:active, #confirmCancel:active { transform: scale(.97); }
+    </style>
+
+    <div id="confirmModal">
+        <div id="confirmBackdrop"></div>
+        <div id="confirmCard">
+            <div id="confirmIconWrap">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <h3 id="confirmTitle">Konfirmasi Hapus</h3>
+            <p id="confirmMessage">Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div id="confirmActions">
+                <button id="confirmCancel" type="button">Batal</button>
+                <button id="confirmOk" type="button">
+                    <i class="fa-solid fa-trash-can"></i> Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        const modal    = document.getElementById('confirmModal');
+        const msgEl    = document.getElementById('confirmMessage');
+        const btnOk    = document.getElementById('confirmOk');
+        const btnCancel= document.getElementById('confirmCancel');
+        const backdrop = document.getElementById('confirmBackdrop');
+        let pendingForm = null;
+
+        function openModal(msg) {
+            if (msg) msgEl.textContent = msg;
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+            pendingForm = null;
+            btnOk.innerHTML = '<i class="fa-solid fa-trash-can"></i> Hapus';
+            btnOk.disabled = false;
+        }
+
+        document.addEventListener('submit', function (e) {
+            const form = e.target;
+            if (!form.dataset.confirm) return;
+            e.preventDefault();
+            pendingForm = form;
+            openModal(form.dataset.confirm);
+        });
+
+        btnOk.addEventListener('click', function () {
+            if (!pendingForm) return;
+            btnOk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+            btnOk.disabled = true;
+            const f = pendingForm;
+            closeModal();
+            f.submit();
+        });
+
+        btnCancel.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    })();
+    </script>
 </body>
 </html>

@@ -112,32 +112,68 @@
 
     @stack('scripts')
 
-    {{-- Custom Confirm Modal --}}
-    <div id="confirmModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-        {{-- Backdrop --}}
-        <div id="confirmBackdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+    {{-- Custom Confirm Modal (pure inline CSS, no Tailwind dependency) --}}
+    <style>
+        #confirmModal {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        #confirmModal.is-open { opacity: 1; pointer-events: all; }
+        #confirmBackdrop {
+            position: absolute; inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+        }
+        #confirmCard {
+            position: relative; background: #fff;
+            border-radius: 1.5rem; box-shadow: 0 25px 60px rgba(0,0,0,.18);
+            width: 100%; max-width: 380px; padding: 2.25rem 2rem;
+            transform: scale(.94); transition: transform 0.22s cubic-bezier(.34,1.56,.64,1);
+        }
+        #confirmModal.is-open #confirmCard { transform: scale(1); }
+        #confirmIconWrap {
+            width: 64px; height: 64px; border-radius: 1rem;
+            background: #fef2f2; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.25rem;
+        }
+        #confirmIconWrap i { font-size: 1.6rem; color: #ef4444; }
+        #confirmTitle {
+            text-align: center; font-weight: 800; font-size: 1.1rem;
+            color: #111827; margin: 0 0 .5rem;
+        }
+        #confirmMessage {
+            text-align: center; font-size: .85rem; color: #6b7280;
+            line-height: 1.6; margin: 0 0 1.75rem;
+        }
+        #confirmActions { display: flex; gap: .75rem; }
+        #confirmCancel, #confirmOk {
+            flex: 1; padding: .8rem 1rem; border-radius: .85rem;
+            font-size: .85rem; font-weight: 700; cursor: pointer;
+            border: none; transition: background .15s, transform .1s;
+        }
+        #confirmCancel { background: #f3f4f6; color: #374151; }
+        #confirmCancel:hover { background: #e5e7eb; }
+        #confirmOk {
+            background: #dc2626; color: #fff;
+            display: flex; align-items: center; justify-content: center; gap: .4rem;
+        }
+        #confirmOk:hover { background: #b91c1c; }
+        #confirmOk:active, #confirmCancel:active { transform: scale(.97); }
+    </style>
 
-        {{-- Modal Card --}}
-        <div id="confirmCard" class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform scale-95 transition-transform duration-200">
-            {{-- Icon --}}
-            <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-red-50 mx-auto mb-5">
-                <i class="fa-solid fa-trash-can text-red-500 text-2xl"></i>
+    <div id="confirmModal">
+        <div id="confirmBackdrop"></div>
+        <div id="confirmCard">
+            <div id="confirmIconWrap">
+                <i class="fa-solid fa-trash-can"></i>
             </div>
-
-            {{-- Text --}}
-            <div class="text-center mb-7">
-                <h3 class="font-display font-extrabold text-lg text-gray-900 mb-2">Konfirmasi Hapus</h3>
-                <p id="confirmMessage" class="text-sm text-gray-500 leading-relaxed">Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.</p>
-            </div>
-
-            {{-- Actions --}}
-            <div class="flex gap-3">
-                <button id="confirmCancel"
-                    class="flex-1 py-3 rounded-xl font-bold text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all">
-                    Batal
-                </button>
-                <button id="confirmOk"
-                    class="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-red-600 hover:bg-red-700 transition-all flex items-center justify-center gap-2 shadow-sm">
+            <h3 id="confirmTitle">Konfirmasi Hapus</h3>
+            <p id="confirmMessage">Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div id="confirmActions">
+                <button id="confirmCancel" type="button">Batal</button>
+                <button id="confirmOk" type="button">
                     <i class="fa-solid fa-trash-can"></i> Hapus
                 </button>
             </div>
@@ -146,32 +182,27 @@
 
     <script>
     (function () {
-        const modal   = document.getElementById('confirmModal');
-        const card    = document.getElementById('confirmCard');
-        const msgEl   = document.getElementById('confirmMessage');
-        const btnOk   = document.getElementById('confirmOk');
-        const btnCancel = document.getElementById('confirmCancel');
+        const modal    = document.getElementById('confirmModal');
+        const msgEl    = document.getElementById('confirmMessage');
+        const btnOk    = document.getElementById('confirmOk');
+        const btnCancel= document.getElementById('confirmCancel');
         const backdrop = document.getElementById('confirmBackdrop');
-
         let pendingForm = null;
 
         function openModal(msg) {
             if (msg) msgEl.textContent = msg;
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.classList.add('opacity-100');
-            setTimeout(() => card.classList.replace('scale-95', 'scale-100'), 10);
+            modal.classList.add('is-open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            card.classList.replace('scale-100', 'scale-95');
-            modal.classList.remove('opacity-100');
-            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('is-open');
             document.body.style.overflow = '';
             pendingForm = null;
+            btnOk.innerHTML = '<i class="fa-solid fa-trash-can"></i> Hapus';
+            btnOk.disabled = false;
         }
 
-        // Intercept forms with data-confirm attribute
         document.addEventListener('submit', function (e) {
             const form = e.target;
             if (!form.dataset.confirm) return;
@@ -180,30 +211,17 @@
             openModal(form.dataset.confirm);
         });
 
-        // Also intercept old-style onsubmit="return confirm(...)" by replacing them
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('form[onsubmit]').forEach(function (form) {
-                const match = form.getAttribute('onsubmit').match(/confirm\(['"](.+?)['"]\)/);
-                if (match) {
-                    form.dataset.confirm = match[1];
-                    form.removeAttribute('onsubmit');
-                }
-            });
-        });
-
         btnOk.addEventListener('click', function () {
-            if (pendingForm) {
-                // Show loading state
-                btnOk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
-                btnOk.disabled = true;
-                closeModal();
-                pendingForm.submit();
-            }
+            if (!pendingForm) return;
+            btnOk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+            btnOk.disabled = true;
+            const f = pendingForm;
+            closeModal();
+            f.submit();
         });
 
         btnCancel.addEventListener('click', closeModal);
         backdrop.addEventListener('click', closeModal);
-
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') closeModal();
         });
@@ -211,3 +229,4 @@
     </script>
 </body>
 </html>
+
