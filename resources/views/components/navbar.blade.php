@@ -3,9 +3,9 @@
 <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-transparent transition-all duration-300 shadow-sm" id="navbar">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center text-white text-xl shadow-md group-hover:scale-105 transition-transform duration-300">
-                <i class="fa-solid fa-landmark"></i>
-            </div>
+            <img src="{{ asset('images/barru-logo.png') }}"
+                 alt="Logo Kabupaten Barru"
+                 class="h-12 w-12 object-contain group-hover:scale-105 transition-transform duration-300">
             <div class="flex flex-col leading-tight">
                 <span class="text-xs text-gray-500 font-medium">Pemerintah {{ $settings['kabupaten'] ?? 'Kabupaten Barru' }}</span>
                 <span class="font-display font-extrabold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">

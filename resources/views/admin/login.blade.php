@@ -18,9 +18,9 @@
 
     <div class="max-w-md w-full bg-white rounded-3xl p-8 lg:p-10 shadow-2xl border border-white/20 relative z-10">
         <div class="text-center mb-8">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-900 text-white flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg">
-                <i class="fa-solid fa-landmark"></i>
-            </div>
+            <img src="{{ asset('images/barru-logo.png') }}"
+                 alt="Logo Kabupaten Barru"
+                 class="w-16 h-16 object-contain mx-auto mb-4">
             <h1 class="font-display font-extrabold text-2xl text-gray-900">Admin Login Portal</h1>
             <p class="text-xs text-gray-500 font-medium mt-1">Kelurahan Mangempang, Kabupaten Barru</p>
         </div>
