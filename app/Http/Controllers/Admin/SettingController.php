@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -17,7 +18,23 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->except('_token');
+        $request->validate([
+            'foto_hero_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        // Handle upload foto hero
+        if ($request->hasFile('foto_hero_file')) {
+            // Hapus file lama jika ada dan bukan URL eksternal
+            $oldFoto = Setting::get('foto_hero');
+            if ($oldFoto && str_contains($oldFoto, '/storage/settings/')) {
+                $oldPath = str_replace(asset('storage/settings/'), '', $oldFoto);
+                Storage::disk('public')->delete('settings/' . basename($oldPath));
+            }
+            $path = $request->file('foto_hero_file')->store('settings', 'public');
+            Setting::set('foto_hero', asset('storage/' . $path));
+        }
+
+        $data = $request->except(['_token', 'foto_hero_file']);
 
         if ($request->has('misi_items')) {
             $misiItems = array_filter(array_map('trim', $request->input('misi_items')));

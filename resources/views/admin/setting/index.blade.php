@@ -5,10 +5,41 @@
             <p class="text-xs text-gray-500">Perbarui data lurah, visi, misi, dan identitas Kelurahan Mangempang.</p>
         </div>
 
-        <form action="{{ route('admin.setting.update') }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.setting.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
-            <!-- Identitas Kelurahan -->
+            {{-- Foto Hero Homepage --}}
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4">
+                <h3 class="font-display font-bold text-sm text-gray-900 uppercase tracking-wider text-blue-700">Foto Hero Homepage</h3>
+                <p class="text-xs text-gray-500">Foto yang tampil di sebelah kanan teks "Selamat Datang" pada halaman utama.</p>
+
+                @php $fotoHero = $settings['foto_hero'] ?? null; @endphp
+                @if($fotoHero)
+                    <div class="flex items-start gap-4">
+                        <img src="{{ $fotoHero }}" alt="Foto Hero Saat Ini" class="w-32 h-32 object-cover rounded-xl border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-500 pt-1">
+                            <p class="font-semibold text-gray-700 mb-1">Foto saat ini:</p>
+                            <p class="break-all">{{ basename($fotoHero) }}</p>
+                        </div>
+                    </div>
+                @else
+                    <div class="flex items-center gap-3 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-xl text-xs font-medium">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Belum ada foto hero. Menggunakan foto default.
+                    </div>
+                @endif
+
+                <div>
+                    <label for="foto_hero_file" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Upload Foto Baru (JPG/PNG/WEBP, max 5MB)</label>
+                    <input type="file" id="foto_hero_file" name="foto_hero_file" accept="image/*"
+                           class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all">
+                    @error('foto_hero_file')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+
             <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4">
                 <h3 class="font-display font-bold text-sm text-gray-900 uppercase tracking-wider text-blue-700">Identitas Wilayah</h3>
                 

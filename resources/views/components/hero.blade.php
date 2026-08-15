@@ -32,7 +32,7 @@
         
         <div class="reveal relative">
             <div class="aspect-square rounded-3xl overflow-hidden border-8 border-white/15 shadow-2xl relative z-10">
-                <img src="https://images.unsplash.com/photo-1590930419160-2f7c78bf1cb0?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" alt="Suasana Kelurahan Mangempang">
+                <img src="{{ !empty($settings['foto_hero']) ? $settings['foto_hero'] : asset('images/hero-photo.png') }}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" alt="Foto Hero Kelurahan Mangempang">
             </div>
             
             <!-- Floating Badge -->
