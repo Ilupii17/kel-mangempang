@@ -52,7 +52,7 @@
                             <div class="font-bold text-xs text-gray-900 line-clamp-1" title="{{ $g->judul }}">
                                 {{ $g->judul }}
                             </div>
-                            <form action="{{ route('admin.galeri.destroy', ['galeri' => $g->id]) }}" method="POST" onsubmit="return confirm('Hapus foto ini dari galeri?')">
+                            <form action="{{ route('admin.galeri.destroy', ['galeri' => $g->id]) }}" method="POST" data-confirm="Hapus foto '{{ $g->judul }}' dari galeri? Tindakan ini tidak dapat dibatalkan.">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:text-red-700 p-1 transition-colors" title="Hapus">

@@ -49,7 +49,7 @@
                                     <a href="{{ route('admin.berita.edit', ['berita' => $b->id]) }}" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all" title="Edit">
                                         <i class="fa-solid fa-pen-to-square text-xs"></i>
                                     </a>
-                                    <form action="{{ route('admin.berita.destroy', ['berita' => $b->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita ini?')">
+                                    <form action="{{ route('admin.berita.destroy', ['berita' => $b->id]) }}" method="POST" data-confirm="Apakah Anda yakin ingin menghapus berita '{{ $b->judul }}'? Tindakan ini tidak dapat dibatalkan.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all" title="Hapus">

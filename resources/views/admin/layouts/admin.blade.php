@@ -111,5 +111,103 @@
     </div>
 
     @stack('scripts')
+
+    {{-- Custom Confirm Modal --}}
+    <div id="confirmModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+        {{-- Backdrop --}}
+        <div id="confirmBackdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+
+        {{-- Modal Card --}}
+        <div id="confirmCard" class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform scale-95 transition-transform duration-200">
+            {{-- Icon --}}
+            <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-red-50 mx-auto mb-5">
+                <i class="fa-solid fa-trash-can text-red-500 text-2xl"></i>
+            </div>
+
+            {{-- Text --}}
+            <div class="text-center mb-7">
+                <h3 class="font-display font-extrabold text-lg text-gray-900 mb-2">Konfirmasi Hapus</h3>
+                <p id="confirmMessage" class="text-sm text-gray-500 leading-relaxed">Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.</p>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex gap-3">
+                <button id="confirmCancel"
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all">
+                    Batal
+                </button>
+                <button id="confirmOk"
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-red-600 hover:bg-red-700 transition-all flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-trash-can"></i> Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        const modal   = document.getElementById('confirmModal');
+        const card    = document.getElementById('confirmCard');
+        const msgEl   = document.getElementById('confirmMessage');
+        const btnOk   = document.getElementById('confirmOk');
+        const btnCancel = document.getElementById('confirmCancel');
+        const backdrop = document.getElementById('confirmBackdrop');
+
+        let pendingForm = null;
+
+        function openModal(msg) {
+            if (msg) msgEl.textContent = msg;
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            setTimeout(() => card.classList.replace('scale-95', 'scale-100'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            card.classList.replace('scale-100', 'scale-95');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = '';
+            pendingForm = null;
+        }
+
+        // Intercept forms with data-confirm attribute
+        document.addEventListener('submit', function (e) {
+            const form = e.target;
+            if (!form.dataset.confirm) return;
+            e.preventDefault();
+            pendingForm = form;
+            openModal(form.dataset.confirm);
+        });
+
+        // Also intercept old-style onsubmit="return confirm(...)" by replacing them
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form[onsubmit]').forEach(function (form) {
+                const match = form.getAttribute('onsubmit').match(/confirm\(['"](.+?)['"]\)/);
+                if (match) {
+                    form.dataset.confirm = match[1];
+                    form.removeAttribute('onsubmit');
+                }
+            });
+        });
+
+        btnOk.addEventListener('click', function () {
+            if (pendingForm) {
+                // Show loading state
+                btnOk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+                btnOk.disabled = true;
+                closeModal();
+                pendingForm.submit();
+            }
+        });
+
+        btnCancel.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    })();
+    </script>
 </body>
 </html>

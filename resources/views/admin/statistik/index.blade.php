@@ -94,7 +94,7 @@
                                         <div class="text-[11px] text-gray-400 font-medium">Bar: {{ $stat->persentase }}%</div>
                                     </div>
 
-                                    <form action="{{ route('admin.statistik.destroy', ['statistik' => $stat->id]) }}" method="POST" onsubmit="return confirm('Hapus item data statistik ini?')">
+                                    <form action="{{ route('admin.statistik.destroy', ['statistik' => $stat->id]) }}" method="POST" data-confirm="Hapus data '{{ $stat->sub_label }}'? Tindakan ini tidak dapat dibatalkan.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all" title="Hapus">

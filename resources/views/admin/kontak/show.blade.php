@@ -39,7 +39,7 @@
                     <i class="fa-solid fa-reply"></i> Balas Via Email
                 </a>
 
-                <form action="{{ route('admin.kontak.destroy', $kontak->id) }}" method="POST" onsubmit="return confirm('Hapus pesan ini?')">
+                <form action="{{ route('admin.kontak.destroy', $kontak->id) }}" method="POST" data-confirm="Hapus pesan dari '{{ $kontak->nama }}'? Tindakan ini tidak dapat dibatalkan.">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white font-bold px-5 py-3 rounded-xl text-sm transition-all flex items-center gap-2">
